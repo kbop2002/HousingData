@@ -1,0 +1,46 @@
+---
+title: "Final Project"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+#install.packages("tidyverse")
+#install.packages("devtools")
+#devtools::install_github("ropensci/skimr")
+
+library(tidyverse)
+library(readxl)
+library(skimr)
+
+data <- readxl::read_xlsx("Data 1501 - Final Project Dataset.xlsx", sheet = 1)
+#house <- readxl::read_xlsx("HOUSE FILENAME", sheet = 2)
+# dat <- readxl::read_xlsx("docs/projects/report_example/Data University - Lecture Workbook Volume 1 (0-8).xlsx", sheet = 1)
+```
+
+```{r}
+data<- data %>%
+  mutate(TotalBaths = (BsmtFullBath + FullBath), 
+         TotalBaths = ifelse(TotalBaths == 0,1,TotalBaths),
+         TotalBaths = ifelse(TotalBaths == 6 && GrLivArea == 1200, 2, TotalBaths),
+         TotalSqtf = ifelse(is.na(GrLivArea) , `1stFlrSF`+`2ndFlrSF`,GrLivArea),
+         YrSold = ifelse(is.na(YrSold), 2010, YrSold),
+         YrsSinceRemodeled = as.numeric(YrSold) - as.numeric(YearRemodAdd),
+         TotalBedrooms = ifelse(as.numeric(BedroomAbvGr) == 0 && TotalSqtf < 1100, 1,BedroomAbvGr),
+         TotalBedrooms = ifelse(as.numeric(BedroomAbvGr) == 0 && TotalSqtf > 1100, 2,BedroomAbvGr),
+         TotalBedrooms = ifelse(as.numeric(BedroomAbvGr) == 0 && TotalSqtf > 1400, 3,BedroomAbvGr),
+         TotalBedrooms = ifelse(as.numeric(BedroomAbvGr) == 0 && TotalSqtf > 1700, 4,BedroomAbvGr),
+         OverallQuall = ifelse(OverallQual < 3,3,OverallQual),
+         CulDSac = ifelse(LotConfig == "CulDSac",1,0),
+         )
+         
+```
+
+```{r}
+skim(dataClean)
+```
+
